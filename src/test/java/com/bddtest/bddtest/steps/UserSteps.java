@@ -6,33 +6,36 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class UserSteps {
 
     private final UserClient userClient;
-
+    private User addedUser;
     private List<User> userList;
 
+    @Autowired
     public UserSteps(UserClient userClient) {
         this.userClient = userClient;
     }
 
     @Given("a user named {string} {string} in the system")
-    public void aPersonNamedInTheSystem(String firstName, String lastName) {
-        userClient.addPerson(new User(firstName, lastName));
+    public void addUser(String firstName, String lastName) {
+        addedUser = userClient.addUser(new User(firstName,lastName));
     }
 
     @When("getting a list of users")
-    public void gettingAListOfUsers() {
-        userList = userClient.getAllUsers();
+    public void getUsers() {
+        userList = userClient.getUsers();
     }
 
     @Then("this list will contain")
-    public void thisListWillContain(DataTable dataTable) {
+    public void assertUserInList(DataTable dataTable){
         assertThat(userList).isEqualTo(convertToPersonList(dataTable));
     }
 
